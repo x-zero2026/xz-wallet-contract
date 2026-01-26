@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>测试登录 - XZ 任务中心</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #333;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    textarea {
+      min-height: 80px;
+      font-family: monospace;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #1890ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #40a9ff;
+    }
+    .info {
+      background: #e6f7ff;
+      border: 1px solid #91d5ff;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #0050b3;
+    }
+    .success {
+      background: #f6ffed;
+      border: 1px solid #b7eb8f;
+      color: #389e0d;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🧪 测试登录</h1>
+    
+    <div class="info">
+      此页面用于测试任务中心的登录功能。填写用户信息后点击"模拟登录"，将自动设置 localStorage 并跳转到任务中心。
+    </div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label>JWT Token *</label>
+        <textarea id="token" required>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkaWQiOiIweDMwNzBkZWIxYzE3NDMyYjA5NGQzMDUwOWNjYmZkNTk4ZmIyNzkzNDM1ZWZkY2E5MjczZGZiYzU1OGJjMDQwY2EiLCJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNzY5NTEzNTg2LCJpYXQiOjE3Njk0MjcxODZ9.xFST95uXdhMYbCy7p_B9BVR1FRqPzeDEDHPxNY8Rv4Q</textarea>
+      </div>
+
+      <div class="form-group">
+        <label>DID *</label>
+        <input type="text" id="did" value="0x3070deb1c17432b094d30509ccbfd598fb2793435efdca9273dfbc558bc040ca" required>
+      </div>
+
+      <div class="form-group">
+        <label>用户名 *</label>
+        <input type="text" id="username" value="admin" required>
+      </div>
+
+      <div class="form-group">
+        <label>以太坊地址 *</label>
+        <input type="text" id="eth_address" value="0x8766E5c6c7311519187328Ebe31fD63C4b88A9cA" required>
+      </div>
+
+      <div class="form-group">
+        <label>邮箱</label>
+        <input type="email" id="email" value="x-zero2026@outlook.com">
+      </div>
+
+      <div class="form-group">
+        <label>项目 ID</label>
+        <input type="text" id="project_id" value="00000000-0000-0000-0000-000000000000">
+      </div>
+
+      <button type="submit">🚀 模拟登录并跳转</button>
+    </form>
+
+    <button onclick="clearStorage()" style="background: #ff4d4f; margin-top: 10px;">
+      🗑️ 清除登录信息
+    </button>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const token = document.getElementById('token').value.trim();
+      const userInfo = {
+        did: document.getElementById('did').value.trim(),
+        username: document.getElementById('username').value.trim(),
+        eth_address: document.getElementById('eth_address').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        project_id: document.getElementById('project_id').value.trim()
+      };
+
+      // 验证必填字段
+      if (!token || !userInfo.did || !userInfo.username || !userInfo.eth_address) {
+        alert('请填写所有必填字段（标记 * 的）');
+        return;
+      }
+
+      // 存储到 localStorage
+      localStorage.setItem('token', token);
+      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+
+      // 显示成功消息
+      const info = document.querySelector('.info');
+      info.className = 'info success';
+      info.textContent = '✅ 登录信息已保存！正在跳转到任务中心...';
+
+      // 延迟跳转
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1000);
+    });
+
+    function clearStorage() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userInfo');
+      alert('✅ 登录信息已清除');
+    }
+
+    // 页面加载时检查是否已登录
+    window.addEventListener('load', function() {
+      const token = localStorage.getItem('token');
+      const userInfo = localStorage.getItem('userInfo');
+      
+      if (token && userInfo) {
+        const info = document.querySelector('.info');
+        info.className = 'info success';
+        info.innerHTML = '✅ 检测到已登录<br>Token: ' + token.substring(0, 50) + '...<br>用户: ' + JSON.parse(userInfo).username;
+      }
+    });
+  </script>
+</body>
+</html>

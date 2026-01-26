@@ -1,0 +1,43 @@
+# AWS SAM build artifacts
+.aws-sam/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Deployment files
+.env.deploy
+deploy.log
+
+# Test/temporary files
+payload.txt
+parameters.json
+response.json
+
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bootstrap
+function.zip
+
+# Go test files
+*.test
+*.out
+
+# Dependency directories
+vendor/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

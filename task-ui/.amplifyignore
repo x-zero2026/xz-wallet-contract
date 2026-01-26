@@ -1,0 +1,23 @@
+# Amplify ignore file
+# Files and directories to exclude from Amplify deployment
+
+# Documentation
+*.md
+!README.md
+
+# Development files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore

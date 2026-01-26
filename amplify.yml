@@ -1,0 +1,17 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - cd task-ui
+        - npm ci
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: task-ui/dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - task-ui/node_modules/**/*

@@ -1,0 +1,224 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: XZ Wallet Backend Lambda Functions
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Runtime: provided.al2
+    Architectures:
+      - arm64
+    Environment:
+      Variables:
+        DATABASE_URL: !Ref DatabaseURL
+        DB_PASSWORD: !Ref DBPassword
+        SEPOLIA_RPC_URL: !Ref SepoliaRPCURL
+        CHAIN_ID: "11155111"
+        XZT_TOKEN_ADDRESS: !Ref XZTTokenAddress
+        TASK_ESCROW_ADDRESS: !Ref TaskEscrowAddress
+        ADMIN_WALLET_ADDRESS: !Ref AdminWalletAddress
+        ADMIN_WALLET_PRIVATE_KEY: !Ref AdminWalletPrivateKey
+        JWT_SECRET: !Ref JWTSecret
+        JWT_EXPIRY: "168h"
+        DID_LOGIN_API_URL: !Ref DIDLoginAPIURL
+
+Parameters:
+  DatabaseURL:
+    Type: String
+    Default: "postgresql://postgres.rbpsksuuvtzmathnmyxn:iPass4xz2026!@aws-1-ap-south-1.pooler.supabase.com:6543/postgres"
+  DBPassword:
+    Type: String
+    Default: "iPass4xz2026!"
+    NoEcho: true
+  SepoliaRPCURL:
+    Type: String
+    Default: "https://eth-sepolia.g.alchemy.com/v2/GA5ibaTuz122ssPqQhWL7"
+  XZTTokenAddress:
+    Type: String
+    Default: "0x6b1f7209E08Bd8B9ec44DDb4Edd9B4AA6acd98F8"
+  TaskEscrowAddress:
+    Type: String
+    Default: "0x8e98B971884e14C5da6D528932bf96296311B8cb"
+  AdminWalletAddress:
+    Type: String
+    Default: "0xd62F159A744df11332F8F1C73C827aed8Ca9378D"
+  AdminWalletPrivateKey:
+    Type: String
+    NoEcho: true
+  JWTSecret:
+    Type: String
+    Default: "Ia7gdt+1znW6j9I9XXLg+//MbKYIMa3HW5X7Eqd3gho="
+  DIDLoginAPIURL:
+    Type: String
+    Default: "https://i149gvmuh8.execute-api.us-east-1.amazonaws.com/prod"
+    Description: DID Login API Gateway URL
+    NoEcho: true
+
+Resources:
+  # API Gateway
+  XZWalletApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowOrigin: "'*'"
+
+  # Get Balance Function
+  GetBalanceFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      CodeUri: .
+      Handler: bootstrap
+      Events:
+        GetBalance:
+          Type: Api
+          Properties:
+            RestApiId: !Ref XZWalletApi
+            Path: /wallet/balance
+            Method: get
+
+  # Create Task Function
+  CreateTaskFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      CodeUri: .
+      Handler: bootstrap
+      Events:
+        CreateTask:
+          Type: Api
+          Properties:
+            RestApiId: !Ref XZWalletApi
+            Path: /tasks
+            Method: post
+
+  # List Tasks Function
+  ListTasksFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      CodeUri: .
+      Handler: bootstrap
+      Events:
+        ListTasks:
+          Type: Api
+          Properties:
+            RestApiId: !Ref XZWalletApi
+            Path: /tasks
+            Method: get
+
+  # Get Task Function
+  GetTaskFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      CodeUri: .
+      Handler: bootstrap
+      Events:
+        GetTask:
+          Type: Api
+          Properties:
+            RestApiId: !Ref XZWalletApi
+            Path: /tasks/{id}
+            Method: get
+
+  # Bid Task Function
+  BidTaskFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      CodeUri: .
+      Handler: bootstrap
+      Events:
+        BidTask:
+          Type: Api
+          Properties:
+            RestApiId: !Ref XZWalletApi
+            Path: /tasks/{id}/bid
+            Method: post
+
+  # Select Bidder Function
+  SelectBidderFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      CodeUri: .
+      Handler: bootstrap
+      Events:
+        SelectBidder:
+          Type: Api
+          Properties:
+            RestApiId: !Ref XZWalletApi
+            Path: /tasks/{id}/select-bidder
+            Method: post
+
+  # Approve Work Function
+  ApproveWorkFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      CodeUri: .
+      Handler: bootstrap
+      Events:
+        ApproveWork:
+          Type: Api
+          Properties:
+            RestApiId: !Ref XZWalletApi
+            Path: /tasks/{id}/approve
+            Method: post
+
+  # Cancel Task Function
+  CancelTaskFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      CodeUri: .
+      Handler: bootstrap
+      Events:
+        CancelTask:
+          Type: Api
+          Properties:
+            RestApiId: !Ref XZWalletApi
+            Path: /tasks/{id}/cancel
+            Method: post
+
+  # Submit Work Function
+  SubmitWorkFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      CodeUri: .
+      Handler: bootstrap
+      Events:
+        SubmitWork:
+          Type: Api
+          Properties:
+            RestApiId: !Ref XZWalletApi
+            Path: /tasks/{id}/submit
+            Method: post
+
+Outputs:
+  XZWalletApiUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${XZWalletApi}.execute-api.${AWS::Region}.amazonaws.com/prod/"
+  
+  GetBalanceFunctionArn:
+    Description: "Get Balance Lambda Function ARN"
+    Value: !GetAtt GetBalanceFunction.Arn
+  
+  CreateTaskFunctionArn:
+    Description: "Create Task Lambda Function ARN"
+    Value: !GetAtt CreateTaskFunction.Arn
