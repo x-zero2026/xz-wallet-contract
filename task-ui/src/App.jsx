@@ -203,6 +203,11 @@ function App() {
           <div className="user-info">
             <div className="user-name">{userInfo.username}</div>
             <div className="user-balance">余额: {balance} XZT</div>
+            {userInfo.eth_address && (
+              <div className="user-address">
+                钱包: {userInfo.eth_address.slice(0, 6)}...{userInfo.eth_address.slice(-4)}
+              </div>
+            )}
           </div>
         </div>
       </header>
