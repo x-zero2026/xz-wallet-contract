@@ -10,19 +10,26 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f5f5f5;
+  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+  min-height: 100vh;
+  color: #fff;
+  overflow-x: hidden;
 }
 
 .app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 10;
 }
 
 /* Header */
 .header {
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(20, 20, 30, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
@@ -32,7 +39,11 @@ body {
 .header-title {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #333;
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
 }
 
 .header-user {
@@ -50,36 +61,39 @@ body {
 
 .user-name {
   font-weight: 600;
-  color: #333;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .user-balance {
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .user-address {
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
 }
 
 .btn-logout {
   padding: 0.5rem 1rem;
-  background: #ff4d4f;
-  color: white;
-  border: none;
+  background: rgba(220, 53, 69, 0.3);
+  color: #ff6b6b;
+  border: 1px solid rgba(220, 53, 69, 0.5);
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
+  transition: all 0.3s;
 }
 
 .btn-logout:hover {
-  background: #ff7875;
+  background: rgba(220, 53, 69, 0.5);
+  border-color: #dc3545;
 }
 
 /* Navigation */
 .nav {
-  background: white;
-  border-bottom: 1px solid #e8e8e8;
+  background: rgba(20, 20, 30, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(102, 126, 234, 0.3);
   padding: 0 2rem;
 }
 
@@ -92,18 +106,20 @@ body {
 .nav-tab {
   padding: 1rem 0;
   cursor: pointer;
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
   border-bottom: 2px solid transparent;
   transition: all 0.3s;
 }
 
 .nav-tab:hover {
-  color: #1890ff;
+  color: #667eea;
+  text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
 }
 
 .nav-tab.active {
-  color: #1890ff;
-  border-bottom-color: #1890ff;
+  color: #667eea;
+  border-bottom-color: #667eea;
+  text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
 }
 
 /* Main Content */
@@ -126,55 +142,67 @@ body {
 }
 
 .btn-primary {
-  background: #1890ff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
 .btn-primary:hover {
-  background: #40a9ff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
 }
 
 .btn-success {
-  background: #52c41a;
-  color: white;
+  background: rgba(82, 196, 26, 0.3);
+  color: #51cf66;
+  border: 1px solid rgba(82, 196, 26, 0.5);
 }
 
 .btn-success:hover {
-  background: #73d13d;
+  background: rgba(82, 196, 26, 0.5);
+  border-color: #52c41a;
 }
 
 .btn-danger {
-  background: #ff4d4f;
-  color: white;
+  background: rgba(220, 53, 69, 0.3);
+  color: #ff6b6b;
+  border: 1px solid rgba(220, 53, 69, 0.5);
 }
 
 .btn-danger:hover {
-  background: #ff7875;
+  background: rgba(220, 53, 69, 0.5);
+  border-color: #dc3545;
 }
 
 .btn-secondary {
-  background: #d9d9d9;
-  color: #333;
+  background: rgba(108, 117, 125, 0.3);
+  color: white;
+  border: 1px solid rgba(108, 117, 125, 0.5);
 }
 
 .btn-secondary:hover {
-  background: #bfbfbf;
+  background: rgba(108, 117, 125, 0.5);
+  border-color: #6c757d;
 }
 
 /* Cards */
 .card {
-  background: white;
+  background: rgba(20, 20, 30, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(102, 126, 234, 0.3);
   border-radius: 8px;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   margin-bottom: 1rem;
+  position: relative;
+  z-index: 10;
 }
 
 .card-title {
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  color: #333;
+  color: rgba(255, 255, 255, 0.95);
 }
 
 /* Forms */
@@ -186,7 +214,7 @@ body {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: #333;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .form-input,
@@ -194,9 +222,17 @@ body {
 .form-select {
   width: 100%;
   padding: 0.5rem;
-  border: 1px solid #d9d9d9;
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
   border-radius: 4px;
   font-size: 0.9rem;
+  transition: all 0.3s;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .form-textarea {
@@ -208,7 +244,14 @@ body {
 .form-textarea:focus,
 .form-select:focus {
   outline: none;
-  border-color: #1890ff;
+  border-color: #667eea;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+}
+
+.form-select option {
+  background: #1a1a2e;
+  color: white;
 }
 
 /* Status Badge */
@@ -220,27 +263,61 @@ body {
   font-weight: 500;
 }
 
-.status-pending { background: #fff7e6; color: #fa8c16; }
-.status-bidding { background: #e6f7ff; color: #1890ff; }
-.status-accepted { background: #f6ffed; color: #52c41a; }
-.status-submitted { background: #fff1f0; color: #ff4d4f; }
-.status-approved { background: #f6ffed; color: #52c41a; }
-.status-completed { background: #f0f0f0; color: #595959; }
-.status-cancelled { background: #fff1f0; color: #ff4d4f; }
+.status-pending { 
+  background: rgba(250, 140, 22, 0.2); 
+  color: #ffa94d;
+  border: 1px solid rgba(250, 140, 22, 0.3);
+}
+
+.status-bidding { 
+  background: rgba(102, 126, 234, 0.2); 
+  color: #667eea;
+  border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.status-accepted { 
+  background: rgba(82, 196, 26, 0.2); 
+  color: #51cf66;
+  border: 1px solid rgba(82, 196, 26, 0.3);
+}
+
+.status-submitted { 
+  background: rgba(250, 140, 22, 0.2); 
+  color: #ffa94d;
+  border: 1px solid rgba(250, 140, 22, 0.3);
+}
+
+.status-approved { 
+  background: rgba(82, 196, 26, 0.2); 
+  color: #51cf66;
+  border: 1px solid rgba(82, 196, 26, 0.3);
+}
+
+.status-completed { 
+  background: rgba(255, 255, 255, 0.1); 
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.status-cancelled { 
+  background: rgba(255, 77, 79, 0.2); 
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 77, 79, 0.3);
+}
 
 /* Loading */
 .loading {
   text-align: center;
   padding: 2rem;
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* Spinner */
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #1890ff;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid #667eea;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -252,9 +329,9 @@ body {
 
 /* Error */
 .error {
-  background: #fff1f0;
-  border: 1px solid #ffccc7;
-  color: #ff4d4f;
+  background: rgba(220, 38, 38, 0.2);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  color: #ff6b6b;
   padding: 1rem;
   border-radius: 4px;
   margin-bottom: 1rem;
@@ -264,7 +341,7 @@ body {
 .empty-state {
   text-align: center;
   padding: 3rem;
-  color: #999;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .empty-state-icon {
@@ -279,7 +356,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -287,13 +364,16 @@ body {
 }
 
 .modal {
-  background: white;
+  background: rgba(20, 20, 30, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(102, 126, 234, 0.3);
   border-radius: 8px;
   padding: 2rem;
   max-width: 600px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
 .modal-header {
@@ -306,7 +386,7 @@ body {
 .modal-title {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #333;
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .modal-close {
@@ -314,11 +394,13 @@ body {
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #999;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s;
 }
 
 .modal-close:hover {
-  color: #333;
+  color: #667eea;
+  text-shadow: 0 0 10px rgba(102, 126, 234, 0.8);
 }
 
 .modal-footer {

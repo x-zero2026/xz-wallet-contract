@@ -4,6 +4,7 @@ import { getBalance, listProjects } from './api';
 import TaskList from './components/TaskList';
 import CreateTaskModal from './components/CreateTaskModal';
 import TaskDetailModal from './components/TaskDetailModal';
+import StarfieldBackground from './components/StarfieldBackground';
 import './App.css';
 
 function App() {
@@ -200,7 +201,9 @@ function App() {
   }
 
   return (
-    <div className="app">
+    <>
+      <StarfieldBackground />
+      <div className="app">
       {/* Header */}
       <header className="header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -304,6 +307,7 @@ function App() {
         />
       )}
     </div>
+    </>
   );
 }
 

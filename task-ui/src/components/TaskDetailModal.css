@@ -10,7 +10,7 @@
 .detail-section {
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(102, 126, 234, 0.3);
 }
 
 .detail-section:last-child {
@@ -26,29 +26,30 @@
 
 .detail-label {
   font-weight: 500;
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
   min-width: 80px;
 }
 
 .detail-value {
-  color: #333;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .detail-value.reward {
-  color: #1890ff;
+  color: #667eea;
   font-weight: 600;
   font-size: 1.1rem;
+  text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
 }
 
 .section-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #333;
+  color: rgba(255, 255, 255, 0.95);
   margin-bottom: 0.75rem;
 }
 
 .detail-text {
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
   line-height: 1.6;
   white-space: pre-wrap;
 }
@@ -82,15 +83,16 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: 1rem;
-  border: 1px solid #e8e8e8;
+  border: 1px solid rgba(102, 126, 234, 0.3);
   border-radius: 8px;
-  background: #fafafa;
+  background: rgba(255, 255, 255, 0.05);
   transition: all 0.3s;
 }
 
 .bid-item:hover {
-  border-color: #1890ff;
-  background: #f0f7ff;
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
 }
 
 .bid-info {
@@ -107,29 +109,30 @@
 }
 
 .bid-bidder strong {
-  color: #333;
+  color: rgba(255, 255, 255, 0.95);
   font-size: 1rem;
 }
 
 .bid-credit {
-  color: #1890ff;
+  color: #667eea;
   font-size: 0.9rem;
   padding: 0.25rem 0.5rem;
-  background: #e6f7ff;
+  background: rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(102, 126, 234, 0.3);
   border-radius: 4px;
 }
 
 .bid-message {
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
   line-height: 1.5;
   padding: 0.5rem;
-  background: white;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 4px;
 }
 
 .bid-time {
-  color: #999;
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.85rem;
 }
 
@@ -155,23 +158,32 @@
 .form-textarea {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #d9d9d9;
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
   border-radius: 4px;
   font-size: 0.95rem;
   font-family: inherit;
   resize: vertical;
   min-height: 120px;
+  transition: all 0.3s;
+}
+
+.form-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .form-textarea:focus {
   outline: none;
-  border-color: #1890ff;
-  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+  border-color: #667eea;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
 }
 
 .form-textarea:disabled {
-  background: #f5f5f5;
+  background: rgba(255, 255, 255, 0.02);
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 
@@ -184,9 +196,9 @@
 
 .submission-item {
   padding: 1rem;
-  border: 1px solid #e8e8e8;
+  border: 1px solid rgba(102, 126, 234, 0.3);
   border-radius: 8px;
-  background: #fafafa;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .submission-header {
@@ -195,12 +207,12 @@
   align-items: center;
   margin-bottom: 0.75rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid rgba(102, 126, 234, 0.3);
 }
 
 .submission-type {
   font-weight: 600;
-  color: #333;
+  color: rgba(255, 255, 255, 0.95);
   font-size: 1rem;
 }
 
@@ -212,25 +224,28 @@
 }
 
 .submission-status.status-pending {
-  background: #fff7e6;
-  color: #d46b08;
+  background: rgba(250, 140, 22, 0.2);
+  color: #ffa94d;
+  border: 1px solid rgba(250, 140, 22, 0.3);
 }
 
 .submission-status.status-approved {
-  background: #f6ffed;
-  color: #52c41a;
+  background: rgba(82, 196, 26, 0.2);
+  color: #51cf66;
+  border: 1px solid rgba(82, 196, 26, 0.3);
 }
 
 .submission-status.status-rejected {
-  background: #fff1f0;
-  color: #f5222d;
+  background: rgba(255, 77, 79, 0.2);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 77, 79, 0.3);
 }
 
 .submission-content {
-  color: #333;
+  color: rgba(255, 255, 255, 0.9);
   line-height: 1.6;
   white-space: pre-wrap;
-  background: white;
+  background: rgba(255, 255, 255, 0.05);
   padding: 0.75rem;
   border-radius: 4px;
   margin-bottom: 0.75rem;
@@ -242,25 +257,28 @@
   gap: 0.5rem;
   align-items: center;
   margin-bottom: 0.75rem;
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
 }
 
 .file-link {
-  color: #1890ff;
+  color: #667eea;
   text-decoration: none;
   padding: 0.25rem 0.5rem;
-  background: #e6f7ff;
+  background: rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(102, 126, 234, 0.3);
   border-radius: 4px;
   font-size: 0.85rem;
+  transition: all 0.3s;
 }
 
 .file-link:hover {
-  background: #bae7ff;
+  background: rgba(102, 126, 234, 0.3);
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.4);
 }
 
 .submission-time {
-  color: #999;
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.85rem;
   margin-top: 0.5rem;
 }
@@ -268,9 +286,9 @@
 .submission-rejection {
   margin-top: 0.75rem;
   padding: 0.5rem;
-  background: #fff1f0;
-  border-left: 3px solid #f5222d;
-  color: #f5222d;
+  background: rgba(255, 77, 79, 0.2);
+  border-left: 3px solid #ff6b6b;
+  color: #ff6b6b;
   font-size: 0.9rem;
 }
 
@@ -281,7 +299,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -289,18 +307,20 @@
 }
 
 .blockchain-loading-content {
-  background: white;
+  background: rgba(20, 20, 30, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(102, 126, 234, 0.3);
   padding: 2rem 3rem;
   border-radius: 12px;
   text-align: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
 .blockchain-loading-spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #1890ff;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid #667eea;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem;
@@ -313,7 +333,7 @@
 
 .blockchain-loading-text {
   font-size: 16px;
-  color: #333;
+  color: rgba(255, 255, 255, 0.9);
   margin: 0;
   font-weight: 500;
 }

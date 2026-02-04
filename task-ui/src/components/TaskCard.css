@@ -1,15 +1,20 @@
 .task-card {
-  background: white;
+  background: rgba(20, 20, 30, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(102, 126, 234, 0.3);
   border-radius: 8px;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   cursor: pointer;
   transition: all 0.3s;
+  position: relative;
+  z-index: 10;
 }
 
 .task-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
   transform: translateY(-2px);
+  border-color: #667eea;
 }
 
 .task-card-header {
@@ -23,12 +28,12 @@
 .task-card-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #333;
+  color: rgba(255, 255, 255, 0.95);
   flex: 1;
 }
 
 .task-card-description {
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
   line-height: 1.5;
   margin-bottom: 1rem;
@@ -39,7 +44,7 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 1rem;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid rgba(102, 126, 234, 0.3);
 }
 
 .task-card-reward {
@@ -49,25 +54,26 @@
 }
 
 .reward-label {
-  color: #999;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
 }
 
 .reward-amount {
-  color: #1890ff;
+  color: #667eea;
   font-weight: 600;
   font-size: 1rem;
+  text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
 }
 
 .task-card-visibility {
   font-size: 0.85rem;
-  color: #999;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .task-card-executor {
   margin-top: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid rgba(102, 126, 234, 0.3);
   font-size: 0.85rem;
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
 }
