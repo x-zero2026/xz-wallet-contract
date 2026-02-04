@@ -15,59 +15,67 @@ function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if token is in URL (from DID login redirect)
-    const urlParams = new URLSearchParams(window.location.search);
-    const tokenFromUrl = urlParams.get('token');
-    
-    if (tokenFromUrl) {
-      console.log('✅ Token received from URL');
-      // Save token to localStorage
-      localStorage.setItem('token', tokenFromUrl);
+    const initializeApp = async () => {
+      // Check if token is in URL (from DID login redirect)
+      const urlParams = new URLSearchParams(window.location.search);
+      const tokenFromUrl = urlParams.get('token');
       
-      // Parse JWT to get user info
-      try {
-        const payload = JSON.parse(atob(tokenFromUrl.split('.')[1]));
-        console.log('Token payload:', payload);
+      if (tokenFromUrl) {
+        console.log('✅ Token received from URL');
+        // Save token to localStorage
+        localStorage.setItem('token', tokenFromUrl);
         
-        // Save basic user info from token
-        // Note: eth_address needs to be queried from database or will be fetched when needed
-        const userInfo = {
-          did: payload.did,
-          username: payload.username,
-          eth_address: '', // Will be populated when fetching balance
-        };
-        localStorage.setItem('userInfo', JSON.stringify(userInfo));
-        console.log('✅ User info saved:', userInfo);
-        
-        // Remove token from URL for security
-        window.history.replaceState({}, document.title, window.location.pathname);
-        
-        // Reload to apply changes
-        window.location.reload();
-        return;
-      } catch (err) {
-        console.error('Failed to parse token:', err);
+        // Parse JWT to get user info
+        try {
+          const payload = JSON.parse(atob(tokenFromUrl.split('.')[1]));
+          console.log('Token payload:', payload);
+          
+          // Save basic user info from token
+          // Note: eth_address needs to be queried from database or will be fetched when needed
+          const userInfo = {
+            did: payload.did,
+            username: payload.username,
+            eth_address: '', // Will be populated when fetching balance
+          };
+          localStorage.setItem('userInfo', JSON.stringify(userInfo));
+          console.log('✅ User info saved:', userInfo);
+          
+          // Remove token from URL for security
+          window.history.replaceState({}, document.title, window.location.pathname);
+          
+          // Reload to apply changes
+          window.location.reload();
+          return;
+        } catch (err) {
+          console.error('Failed to parse token:', err);
+        }
       }
-    }
+      
+      const user = getUserInfo();
+      if (!user) {
+        // 未登录，显示提示
+        setLoading(false);
+        return;
+      }
+      setUserInfo(user);
+      
+      // Load projects
+      await loadProjects();
+      
+      // Fetch eth_address if not present
+      if (!user.eth_address && user.did) {
+        await fetchUserEthAddress(user.did);
+      } else if (user.eth_address) {
+        await loadBalance(user.eth_address);
+      }
+      
+      setLoading(false);
+    };
     
-    const user = getUserInfo();
-    if (!user) {
-      // 未登录，显示提示
-      return;
-    }
-    setUserInfo(user);
-    
-    // Load projects
-    loadProjects();
-    
-    // Fetch eth_address if not present
-    if (!user.eth_address && user.did) {
-      fetchUserEthAddress(user.did);
-    } else if (user.eth_address) {
-      loadBalance(user.eth_address);
-    }
+    initializeApp();
   }, []);
 
   const fetchUserEthAddress = async (did) => {
@@ -151,6 +159,21 @@ function App() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="app">
+        <div className="main-content">
+          <div className="card" style={{ textAlign: 'center', maxWidth: '500px', margin: '2rem auto' }}>
+            <div style={{ padding: '2rem' }}>
+              <div className="spinner" style={{ margin: '0 auto 1rem' }}></div>
+              <p style={{ color: '#666' }}>加载中...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!userInfo) {
     return (
       <div className="app">
@@ -163,6 +186,13 @@ function App() {
             <p style={{ color: '#999', fontSize: '0.9rem' }}>
               您需要通过 DID 登录系统进行身份验证
             </p>
+            <a 
+              href="https://main.d2fozf421c6ftf.amplifyapp.com" 
+              className="btn btn-primary"
+              style={{ marginTop: '1rem', display: 'inline-block' }}
+            >
+              前往登录
+            </a>
           </div>
         </div>
       </div>

@@ -13,6 +13,7 @@ function TaskDetailModal({ taskId, onClose, onUpdate, onSwitchTab }) {
   const [showSubmitForm, setShowSubmitForm] = useState(false);
   const [submitContent, setSubmitContent] = useState('');
   const [submitType, setSubmitType] = useState('');
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [selectingBidder, setSelectingBidder] = useState(false);
   const [approvingWork, setApprovingWork] = useState(false);
   const [blockchainLoading, setBlockchainLoading] = useState(false);
@@ -197,7 +198,7 @@ function TaskDetailModal({ taskId, onClose, onUpdate, onSwitchTab }) {
     }
 
     try {
-      setActionLoading(true);
+      setSubmitLoading(true);
       setBlockchainLoading(true);
       setBlockchainMessage('正在提交工作成果...');
       setError(null);
@@ -217,7 +218,7 @@ function TaskDetailModal({ taskId, onClose, onUpdate, onSwitchTab }) {
       setError(err.response?.data?.error || '提交失败');
       console.error('Submit work error:', err);
     } finally {
-      setActionLoading(false);
+      setSubmitLoading(false);
     }
   };
 
@@ -523,7 +524,7 @@ function TaskDetailModal({ taskId, onClose, onUpdate, onSwitchTab }) {
                     else if (canSubmitImplementation) setSubmitType('implementation');
                     else if (canSubmitFinal) setSubmitType('final');
                   }}
-                  disabled={actionLoading}
+                  disabled={submitLoading}
                 >
                   {canSubmitDesign && '提交设计方案'}
                   {canSubmitImplementation && '提交基础成果'}
@@ -541,7 +542,7 @@ function TaskDetailModal({ taskId, onClose, onUpdate, onSwitchTab }) {
                     placeholder="请详细描述你的工作内容、成果和相关链接..."
                     value={submitContent}
                     onChange={(e) => setSubmitContent(e.target.value)}
-                    disabled={actionLoading}
+                    disabled={submitLoading}
                     rows={6}
                   />
                   <div className="submit-form-actions">
@@ -552,16 +553,16 @@ function TaskDetailModal({ taskId, onClose, onUpdate, onSwitchTab }) {
                         setSubmitContent('');
                         setSubmitType('');
                       }}
-                      disabled={actionLoading}
+                      disabled={submitLoading}
                     >
                       取消
                     </button>
                     <button
                       className="btn btn-primary"
                       onClick={handleSubmitWork}
-                      disabled={actionLoading}
+                      disabled={submitLoading}
                     >
-                      {actionLoading ? '提交中...' : '提交'}
+                      {submitLoading ? '提交中...' : '提交'}
                     </button>
                   </div>
                 </div>
