@@ -16,7 +16,7 @@ function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // 改为 false，不显示初始加载
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -57,8 +57,7 @@ function App() {
       
       const user = getUserInfo();
       if (!user) {
-        // 未登录，显示提示
-        setLoading(false);
+        // 未登录，不需要设置 loading
         return;
       }
       setUserInfo(user);
@@ -72,8 +71,6 @@ function App() {
       } else if (user.eth_address) {
         await loadBalance(user.eth_address);
       }
-      
-      setLoading(false);
     };
     
     initializeApp();
@@ -159,21 +156,6 @@ function App() {
         return {};
     }
   };
-
-  if (loading) {
-    return (
-      <div className="app">
-        <div className="main-content">
-          <div className="card" style={{ textAlign: 'center', maxWidth: '500px', margin: '2rem auto' }}>
-            <div style={{ padding: '2rem' }}>
-              <div className="spinner" style={{ margin: '0 auto 1rem' }}></div>
-              <p style={{ color: '#666' }}>加载中...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (!userInfo) {
     return (
