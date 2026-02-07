@@ -54,7 +54,7 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		SELECT 
 			t.task_id, t.contract_task_id, t.project_id, t.creator_did, t.executor_did,
 			t.task_name, t.task_description, t.acceptance_criteria,
-			t.reward_amount, t.paid_amount, t.visibility, t.status,
+			t.reward_amount, t.paid_amount, t.visibility, t.status, t.profession_tags,
 			t.created_at, t.updated_at,
 			u_creator.username as creator_username,
 			u_executor.username as executor_username,
@@ -114,7 +114,7 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		err := rows.Scan(
 			&task.TaskID, &task.ContractTaskID, &task.ProjectID, &task.CreatorDID, &task.ExecutorDID,
 			&task.TaskName, &task.TaskDescription, &task.AcceptanceCriteria,
-			&task.RewardAmount, &task.PaidAmount, &task.Visibility, &task.Status,
+			&task.RewardAmount, &task.PaidAmount, &task.Visibility, &task.Status, &task.ProfessionTags,
 			&task.CreatedAt, &task.UpdatedAt,
 			&task.CreatorUsername, &task.ExecutorUsername, &task.BidCount,
 		)

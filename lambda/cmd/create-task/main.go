@@ -22,12 +22,13 @@ import (
 )
 
 type CreateTaskRequest struct {
-	ProjectID          string `json:"project_id"`
-	TaskName           string `json:"task_name"`
-	TaskDescription    string `json:"task_description"`
-	AcceptanceCriteria string `json:"acceptance_criteria"`
-	RewardAmount       string `json:"reward_amount"`
-	Visibility         string `json:"visibility"`
+	ProjectID          string   `json:"project_id"`
+	TaskName           string   `json:"task_name"`
+	TaskDescription    string   `json:"task_description"`
+	AcceptanceCriteria string   `json:"acceptance_criteria"`
+	RewardAmount       string   `json:"reward_amount"`
+	Visibility         string   `json:"visibility"`
+	ProfessionTags     []string `json:"profession_tags"`
 }
 
 type CreateTaskResponse struct {
@@ -138,12 +139,12 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		INSERT INTO tasks (
 			contract_task_id, project_id, creator_did, task_name, 
 			task_description, acceptance_criteria, reward_amount, 
-			visibility, status
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+			visibility, status, profession_tags
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 		RETURNING task_id
 	`, -1, req.ProjectID, claims.DID, req.TaskName,
 		req.TaskDescription, req.AcceptanceCriteria, req.RewardAmount,
-		req.Visibility, "pending").Scan(&taskID)
+		req.Visibility, "pending", req.ProfessionTags).Scan(&taskID)
 	if err != nil {
 		return response.Error(500, fmt.Sprintf("Failed to save task: %v", err))
 	}

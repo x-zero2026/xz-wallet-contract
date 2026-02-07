@@ -25,6 +25,68 @@ function TaskDetailModal({ taskId, onClose, onUpdate, onSwitchTab }) {
   const isCreator = task && task.creator_did === userInfo?.did;
   const isExecutor = task && task.executor_did === userInfo?.did;
 
+  // Helper function to calculate matched tags
+  const getMatchedTags = (userTags, taskTags) => {
+    if (!userTags || !taskTags) return [];
+    const matched = [];
+    userTags.forEach(userTag => {
+      taskTags.forEach(taskTag => {
+        // Fuzzy match: bidirectional contains
+        if (userTag.toLowerCase().includes(taskTag.toLowerCase()) || 
+            taskTag.toLowerCase().includes(userTag.toLowerCase())) {
+          if (!matched.includes(userTag)) {
+            matched.push(userTag);
+          }
+        }
+      });
+    });
+    return matched;
+  };
+
+  // Helper function to generate mailto link
+  const getMailtoLink = (user) => {
+    const taskUrl = `${window.location.origin}/tasks/${taskId}`;
+    const subject = `X-Zero: 邀请您参与${task.task_name}任务`;
+    const body = `您好，
+
+我们邀请您参与以下任务：
+
+任务名称：${task.task_name}
+任务描述：${task.task_description}
+奖励金额：${task.reward_amount} XZT
+验收标准：${task.acceptance_criteria}
+
+点击查看详情并投标：
+${taskUrl}
+
+期待您的参与！`;
+    
+    return `mailto:${user.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  // Helper function to open Outlook compose
+  const openOutlookCompose = (user) => {
+    const taskUrl = `${window.location.origin}/tasks/${taskId}`;
+    const subject = `X-Zero: 邀请您参与${task.task_name}任务`;
+    const body = `您好，
+
+我们邀请您参与以下任务：
+
+任务名称：${task.task_name}
+任务描述：${task.task_description}
+奖励金额：${parseFloat(task.reward_amount).toFixed(2)} XZT
+验收标准：${task.acceptance_criteria}
+
+点击查看详情并投标：
+${taskUrl}
+
+期待您的参与！`;
+    
+    // Outlook web compose URL
+    const outlookUrl = `https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(user.email)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(outlookUrl, '_blank');
+  };
+
   useEffect(() => {
     loadTask();
   }, [taskId]);
@@ -32,7 +94,19 @@ function TaskDetailModal({ taskId, onClose, onUpdate, onSwitchTab }) {
   useEffect(() => {
     // Load recommendations when task is in bidding status and has profession_tags
     if (task && task.status === 'bidding' && task.profession_tags && task.profession_tags.length > 0) {
+      console.log('Loading recommendations for task:', {
+        taskId: task.task_id,
+        status: task.status,
+        profession_tags: task.profession_tags,
+        isCreator
+      });
       loadRecommendations();
+    } else if (task) {
+      console.log('Not loading recommendations:', {
+        status: task.status,
+        hasTags: task.profession_tags && task.profession_tags.length > 0,
+        profession_tags: task.profession_tags
+      });
     }
   }, [task]);
 
@@ -62,13 +136,20 @@ function TaskDetailModal({ taskId, onClose, onUpdate, onSwitchTab }) {
   const loadRecommendations = async () => {
     try {
       setLoadingRecommendations(true);
+      console.log('Calling recommendUsers API with tags:', task.profession_tags);
       const response = await recommendUsers(task.profession_tags);
+      console.log('Recommendations response:', response.data);
       if (response.data.success && response.data.data) {
+        console.log('Setting recommended users:', response.data.data);
         setRecommendedUsers(response.data.data);
+      } else {
+        console.log('No recommendations returned');
+        setRecommendedUsers([]);
       }
     } catch (err) {
       // Silently fail - recommendations are optional
       console.error('Load recommendations error:', err);
+      console.error('Error details:', err.response?.data);
       setRecommendedUsers([]);
     } finally {
       setLoadingRecommendations(false);
@@ -394,90 +475,135 @@ function TaskDetailModal({ taskId, onClose, onUpdate, onSwitchTab }) {
             </div>
           )}
 
+          {/* Recommended Candidates (for creator when status is bidding) */}
+          {canSelectBidder && recommendedUsers.length > 0 && (
+            <div className="detail-section">
+              <h3 className="section-title">推荐列表 ({recommendedUsers.length})</h3>
+              {loadingRecommendations ? (
+                <div className="loading-text">加载推荐中...</div>
+              ) : (
+                <div className="candidates-list">
+                  {recommendedUsers.map((user) => {
+                    const matchedTags = user.matched_tags || [];
+                    return (
+                      <div key={user.did} className="candidate-item">
+                        <div className="candidate-header">
+                          <strong className="candidate-name">
+                            {user.username} ({user.email})
+                          </strong>
+                          <div className="candidate-scores">
+                            <span className="score-item credit" title="信用分">
+                              ⭐ {user.credit_score}
+                            </span>
+                            <span className="score-item tasks" title="已完成任务">
+                              ✅ {user.tasks_completed}
+                            </span>
+                            <span className="score-item match" title="匹配度">
+                              🎯 {user.match_score}%
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {user.profession_tags && user.profession_tags.length > 0 && (
+                          <div className="candidate-tags">
+                            {user.profession_tags.map((tag, idx) => (
+                              <span 
+                                key={idx} 
+                                className={`candidate-tag ${matchedTags.includes(tag) ? 'matched' : ''}`}
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        
+                        {user.bio && (
+                          <div className="candidate-bio">{user.bio}</div>
+                        )}
+                        
+                        <div className="candidate-actions">
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              openOutlookCompose(user);
+                            }}
+                          >
+                            邀请
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Bidders List (for creator when status is bidding) */}
           {canSelectBidder && task.bids && task.bids.length > 0 && (
             <div className="detail-section">
               <h3 className="section-title">投标列表 ({task.bids.length})</h3>
-              <div className="bids-list">
-                {task.bids.map((bid) => (
-                  <div key={bid.bid_id} className="bid-item">
-                    <div className="bid-info">
-                      <div className="bid-bidder">
-                        <strong>{bid.bidder_username}</strong>
-                        <span className="bid-credit">信用分: {bid.bidder_credit_score}</span>
-                      </div>
-                      <div className="bid-message">
-                        {bid.bid_message || '(未填写申请说明)'}
-                      </div>
-                      <div className="bid-time">
-                        投标时间: {new Date(bid.created_at).toLocaleString('zh-CN')}
-                      </div>
-                    </div>
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => handleSelectBidder(bid.bidder_did)}
-                      disabled={selectingBidder}
-                    >
-                      {selectingBidder ? '选择中...' : '选择'}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Recommended Candidates (for creator when status is bidding) */}
-          {canSelectBidder && recommendedUsers.length > 0 && (
-            <div className="detail-section">
-              <h3 className="section-title">
-                推荐候选人 ({recommendedUsers.length})
-                <span style={{ fontSize: '0.875rem', fontWeight: 'normal', marginLeft: '0.5rem', color: 'rgba(255, 255, 255, 0.6)' }}>
-                  基于职业标签匹配
-                </span>
-              </h3>
-              {loadingRecommendations ? (
-                <div className="loading-text">加载推荐中...</div>
-              ) : (
-                <div className="recommendations-list">
-                  {recommendedUsers.map((user) => (
-                    <div key={user.did} className="recommendation-item">
-                      <div className="recommendation-info">
-                        <div className="recommendation-header">
-                          <strong>{user.username}</strong>
-                          <div className="recommendation-scores">
-                            <span className="match-score" title="匹配度">
-                              🎯 {user.match_score}%
-                            </span>
-                            <span className="credit-score" title="信用分">
-                              ⭐ {user.credit_score}
-                            </span>
-                            <span className="tasks-completed" title="完成任务数">
-                              ✅ {user.tasks_completed}
-                            </span>
-                          </div>
+              <div className="candidates-list">
+                {task.bids.map((bid) => {
+                  const matchedTags = getMatchedTags(bid.bidder_profession_tags, task.profession_tags);
+                  return (
+                    <div key={bid.bid_id} className="candidate-item">
+                      <div className="candidate-header">
+                        <strong className="candidate-name">
+                          {bid.bidder_username} ({bid.bidder_email})
+                        </strong>
+                        <div className="candidate-scores">
+                          <span className="score-item credit" title="信用分">
+                            ⭐ {bid.bidder_credit_score}
+                          </span>
+                          <span className="score-item tasks" title="已完成任务">
+                            ✅ {bid.bidder_tasks_completed}
+                          </span>
                         </div>
-                        <div className="recommendation-email">{user.email}</div>
-                        {user.matched_tags && user.matched_tags.length > 0 && (
-                          <div className="matched-tags">
-                            <span className="matched-tags-label">匹配标签:</span>
-                            {user.matched_tags.map((tag, idx) => (
-                              <span key={idx} className="matched-tag">{tag}</span>
-                            ))}
-                          </div>
-                        )}
-                        {user.profession_tags && user.profession_tags.length > 0 && (
-                          <div className="user-tags">
-                            <span className="user-tags-label">所有标签:</span>
-                            {user.profession_tags.map((tag, idx) => (
-                              <span key={idx} className="user-tag">{tag}</span>
-                            ))}
-                          </div>
-                        )}
+                      </div>
+                      
+                      {bid.bidder_profession_tags && bid.bidder_profession_tags.length > 0 && (
+                        <div className="candidate-tags">
+                          {bid.bidder_profession_tags.map((tag, idx) => (
+                            <span 
+                              key={idx} 
+                              className={`candidate-tag ${matchedTags.includes(tag) ? 'matched' : ''}`}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {bid.bidder_bio && (
+                        <div className="candidate-bio">{bid.bidder_bio}</div>
+                      )}
+                      
+                      {bid.bid_message && (
+                        <div className="bid-message-box">
+                          <strong>投标说明：</strong>
+                          <p>{bid.bid_message}</p>
+                        </div>
+                      )}
+                      
+                      <div className="candidate-actions">
+                        <span className="bid-time">
+                          投标时间: {new Date(bid.created_at).toLocaleString('zh-CN')}
+                        </span>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          onClick={() => handleSelectBidder(bid.bidder_did)}
+                          disabled={selectingBidder}
+                        >
+                          {selectingBidder ? '选择中...' : '选择'}
+                        </button>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
+                  );
+                })}
+              </div>
             </div>
           )}
 

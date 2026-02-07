@@ -18,6 +18,7 @@ type Task struct {
 	PaidAmount      string    `json:"paid_amount"`
 	Visibility      string    `json:"visibility"`
 	Status          string    `json:"status"`
+	ProfessionTags  []string  `json:"profession_tags,omitempty"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
 	CompletedAt     *time.Time `json:"completed_at,omitempty"`

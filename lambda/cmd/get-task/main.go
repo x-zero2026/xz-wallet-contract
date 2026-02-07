@@ -28,8 +28,12 @@ type UserInfo struct {
 
 type BidInfo struct {
 	models.TaskBid
-	BidderUsername  string `json:"bidder_username"`
-	BidderCreditScore int  `json:"bidder_credit_score"`
+	BidderUsername    string   `json:"bidder_username"`
+	BidderEmail       string   `json:"bidder_email"`
+	BidderCreditScore int      `json:"bidder_credit_score"`
+	BidderTasksCompleted int   `json:"bidder_tasks_completed"`
+	BidderProfessionTags []string `json:"bidder_profession_tags"`
+	BidderBio         *string  `json:"bidder_bio,omitempty"`
 }
 
 func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -60,13 +64,13 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	err := pool.QueryRow(ctx, `
 		SELECT task_id, contract_task_id, project_id, creator_did, executor_did,
 		       task_name, task_description, acceptance_criteria,
-		       reward_amount, paid_amount, visibility, status,
+		       reward_amount, paid_amount, visibility, status, profession_tags,
 		       created_at, updated_at, completed_at, cancelled_at
 		FROM tasks WHERE task_id = $1
 	`, taskID).Scan(
 		&task.TaskID, &task.ContractTaskID, &task.ProjectID, &task.CreatorDID, &task.ExecutorDID,
 		&task.TaskName, &task.TaskDescription, &task.AcceptanceCriteria,
-		&task.RewardAmount, &task.PaidAmount, &task.Visibility, &task.Status,
+		&task.RewardAmount, &task.PaidAmount, &task.Visibility, &task.Status, &task.ProfessionTags,
 		&task.CreatedAt, &task.UpdatedAt, &task.CompletedAt, &task.CancelledAt,
 	)
 	if err != nil {
@@ -122,7 +126,7 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	bidRows, err := pool.Query(ctx, `
 		SELECT tb.bid_id, tb.task_id, tb.bidder_did, tb.bid_message,
 		       tb.credit_score_snapshot, tb.status, tb.created_at, tb.updated_at,
-		       u.username, u.credit_score
+		       u.username, u.email, u.credit_score, u.tasks_completed, u.profession_tags, u.bio
 		FROM task_bids tb
 		JOIN users u ON tb.bidder_did = u.did
 		WHERE tb.task_id = $1
@@ -135,7 +139,8 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 			err := bidRows.Scan(
 				&bid.BidID, &bid.TaskID, &bid.BidderDID, &bid.BidMessage,
 				&bid.CreditScoreSnapshot, &bid.Status, &bid.CreatedAt, &bid.UpdatedAt,
-				&bid.BidderUsername, &bid.BidderCreditScore,
+				&bid.BidderUsername, &bid.BidderEmail, &bid.BidderCreditScore, 
+				&bid.BidderTasksCompleted, &bid.BidderProfessionTags, &bid.BidderBio,
 			)
 			if err == nil {
 				bids = append(bids, bid)
