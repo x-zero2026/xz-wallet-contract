@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { createTask, VISIBILITY } from '../api';
+import { createTask, VISIBILITY, identifyProfessionTags } from '../api';
+import TagSelector from './TagSelector';
 import './TaskDetailModal.css'; // 使用相同的CSS样式
 
 function CreateTaskModal({ onClose, onSuccess, selectedProject }) {
@@ -9,14 +10,41 @@ function CreateTaskModal({ onClose, onSuccess, selectedProject }) {
     acceptance_criteria: '',
     reward_amount: '',
     visibility: VISIBILITY.GLOBAL,
+    profession_tags: [],
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [blockchainLoading, setBlockchainLoading] = useState(false);
+  const [identifyingTags, setIdentifyingTags] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDescriptionBlur = async () => {
+    // Auto-identify profession tags when description loses focus
+    if (formData.task_description.trim() && formData.profession_tags.length === 0) {
+      try {
+        setIdentifyingTags(true);
+        const response = await identifyProfessionTags(formData.task_description);
+        if (response.data.success && response.data.data.profession_tags) {
+          setFormData((prev) => ({
+            ...prev,
+            profession_tags: response.data.data.profession_tags,
+          }));
+        }
+      } catch (err) {
+        // Silently fail - user can manually add tags
+        console.error('Identify tags error:', err);
+      } finally {
+        setIdentifyingTags(false);
+      }
+    }
+  };
+
+  const handleTagsChange = (tags) => {
+    setFormData((prev) => ({ ...prev, profession_tags: tags }));
   };
 
   const handleSubmit = async (e) => {
@@ -107,7 +135,23 @@ function CreateTaskModal({ onClose, onSuccess, selectedProject }) {
               className="form-textarea"
               value={formData.task_description}
               onChange={handleChange}
+              onBlur={handleDescriptionBlur}
               placeholder="详细描述任务内容和要求"
+              disabled={loading}
+            />
+            {identifyingTags && (
+              <p className="help-text" style={{ color: '#667eea', marginTop: '0.5rem' }}>
+                正在识别职业标签...
+              </p>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">职业标签</label>
+            <TagSelector
+              selectedTags={formData.profession_tags}
+              onChange={handleTagsChange}
+              maxTags={5}
               disabled={loading}
             />
           </div>

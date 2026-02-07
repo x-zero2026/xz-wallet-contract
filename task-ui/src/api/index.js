@@ -60,6 +60,39 @@ export const listProjects = () => {
 };
 
 // ============================================
+// Profession Tags APIs
+// ============================================
+const BUSINESS_CONSULTANT_API_URL = import.meta.env.VITE_BUSINESS_CONSULTANT_API_URL || 'https://r3jwp815n9.execute-api.us-east-1.amazonaws.com/Prod';
+
+export const identifyProfessionTags = (taskDescription) => {
+  const token = getToken();
+  return axios.post(
+    `${BUSINESS_CONSULTANT_API_URL}/identify-profession-tags`,
+    { task_description: taskDescription },
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+};
+
+export const recommendUsers = (professionTags) => {
+  const token = getToken();
+  return axios.post(
+    `${DID_LOGIN_API_URL}/api/recommend-users`,
+    { profession_tags: professionTags },
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+};
+
+// ============================================
 // Task APIs
 // ============================================
 export const createTask = (taskData) => {

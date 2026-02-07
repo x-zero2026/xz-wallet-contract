@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getTask, bidTask, selectBidder, approveWork, cancelTask, submitWork, TASK_STATUS_LABELS } from '../api';
+import { getTask, bidTask, selectBidder, approveWork, cancelTask, submitWork, TASK_STATUS_LABELS, recommendUsers } from '../api';
 import { getUserInfo } from '../utils/auth';
 import './TaskDetailModal.css';
 
@@ -18,6 +18,8 @@ function TaskDetailModal({ taskId, onClose, onUpdate, onSwitchTab }) {
   const [approvingWork, setApprovingWork] = useState(false);
   const [blockchainLoading, setBlockchainLoading] = useState(false);
   const [blockchainMessage, setBlockchainMessage] = useState('');
+  const [recommendedUsers, setRecommendedUsers] = useState([]);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   
   const userInfo = getUserInfo();
   const isCreator = task && task.creator_did === userInfo?.did;
@@ -26,6 +28,13 @@ function TaskDetailModal({ taskId, onClose, onUpdate, onSwitchTab }) {
   useEffect(() => {
     loadTask();
   }, [taskId]);
+
+  useEffect(() => {
+    // Load recommendations when task is in bidding status and has profession_tags
+    if (task && task.status === 'bidding' && task.profession_tags && task.profession_tags.length > 0) {
+      loadRecommendations();
+    }
+  }, [task]);
 
   const loadTask = async () => {
     try {
@@ -47,6 +56,22 @@ function TaskDetailModal({ taskId, onClose, onUpdate, onSwitchTab }) {
       console.error('Load task error:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadRecommendations = async () => {
+    try {
+      setLoadingRecommendations(true);
+      const response = await recommendUsers(task.profession_tags);
+      if (response.data.success && response.data.data) {
+        setRecommendedUsers(response.data.data);
+      }
+    } catch (err) {
+      // Silently fail - recommendations are optional
+      console.error('Load recommendations error:', err);
+      setRecommendedUsers([]);
+    } finally {
+      setLoadingRecommendations(false);
     }
   };
 
@@ -398,6 +423,61 @@ function TaskDetailModal({ taskId, onClose, onUpdate, onSwitchTab }) {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Recommended Candidates (for creator when status is bidding) */}
+          {canSelectBidder && recommendedUsers.length > 0 && (
+            <div className="detail-section">
+              <h3 className="section-title">
+                推荐候选人 ({recommendedUsers.length})
+                <span style={{ fontSize: '0.875rem', fontWeight: 'normal', marginLeft: '0.5rem', color: 'rgba(255, 255, 255, 0.6)' }}>
+                  基于职业标签匹配
+                </span>
+              </h3>
+              {loadingRecommendations ? (
+                <div className="loading-text">加载推荐中...</div>
+              ) : (
+                <div className="recommendations-list">
+                  {recommendedUsers.map((user) => (
+                    <div key={user.did} className="recommendation-item">
+                      <div className="recommendation-info">
+                        <div className="recommendation-header">
+                          <strong>{user.username}</strong>
+                          <div className="recommendation-scores">
+                            <span className="match-score" title="匹配度">
+                              🎯 {user.match_score}%
+                            </span>
+                            <span className="credit-score" title="信用分">
+                              ⭐ {user.credit_score}
+                            </span>
+                            <span className="tasks-completed" title="完成任务数">
+                              ✅ {user.tasks_completed}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="recommendation-email">{user.email}</div>
+                        {user.matched_tags && user.matched_tags.length > 0 && (
+                          <div className="matched-tags">
+                            <span className="matched-tags-label">匹配标签:</span>
+                            {user.matched_tags.map((tag, idx) => (
+                              <span key={idx} className="matched-tag">{tag}</span>
+                            ))}
+                          </div>
+                        )}
+                        {user.profession_tags && user.profession_tags.length > 0 && (
+                          <div className="user-tags">
+                            <span className="user-tags-label">所有标签:</span>
+                            {user.profession_tags.map((tag, idx) => (
+                              <span key={idx} className="user-tag">{tag}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

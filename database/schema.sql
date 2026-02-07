@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     
     -- Settings
     visibility VARCHAR(20) NOT NULL CHECK (visibility IN ('project', 'global')),
+    profession_tags TEXT[] DEFAULT '{}',
     
     -- Status tracking
     status VARCHAR(30) NOT NULL DEFAULT 'pending' CHECK (status IN (
@@ -65,6 +66,7 @@ CREATE INDEX IF NOT EXISTS idx_tasks_executor ON tasks(executor_did);
 CREATE INDEX IF NOT EXISTS idx_tasks_project ON tasks(project_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_visibility ON tasks(visibility);
 CREATE INDEX IF NOT EXISTS idx_tasks_created_at ON tasks(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_tasks_profession_tags ON tasks USING GIN(profession_tags);
 
 -- ============================================
 -- Task Bids Table
