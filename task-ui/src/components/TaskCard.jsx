@@ -28,6 +28,16 @@ function TaskCard({ task, onClick }) {
           : task.task_description}
       </p>
       
+      {task.profession_tags && task.profession_tags.length > 0 && (
+        <div className="task-card-tags">
+          {task.profession_tags.map((tag, idx) => (
+            <span key={idx} className="task-tag">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+      
       <div className="task-card-footer">
         <div className="task-card-reward">
           <span className="reward-label">奖励:</span>
