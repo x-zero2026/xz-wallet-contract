@@ -8,7 +8,7 @@ import StarfieldBackground from './components/StarfieldBackground';
 import './App.css';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('available');
+  const [activeTab, setActiveTab] = useState('my-published');
   const [userInfo, setUserInfo] = useState(null);
   const [balance, setBalance] = useState('0');
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -231,6 +231,12 @@ function App() {
       <nav className="nav">
         <ul className="nav-tabs">
           <li
+            className={`nav-tab ${activeTab === 'my-published' ? 'active' : ''}`}
+            onClick={() => setActiveTab('my-published')}
+          >
+            我发布的
+          </li>
+          <li
             className={`nav-tab ${activeTab === 'available' ? 'active' : ''}`}
             onClick={() => setActiveTab('available')}
           >
@@ -241,12 +247,6 @@ function App() {
             onClick={() => setActiveTab('my-tasks')}
           >
             我的任务
-          </li>
-          <li
-            className={`nav-tab ${activeTab === 'my-published' ? 'active' : ''}`}
-            onClick={() => setActiveTab('my-published')}
-          >
-            我发布的
           </li>
         </ul>
       </nav>
